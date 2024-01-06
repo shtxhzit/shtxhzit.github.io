@@ -1737,3 +1737,10 @@ Footer Section style
     text-decoration: none;
 
 }
+
+@media (max-width: 600px) {
+    .logo {
+        width: 50%; /* 调整为较小屏幕适合的尺寸 */
+        /* 其他需要调整的样式 */
+    }
+}
