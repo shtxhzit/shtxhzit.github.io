@@ -1745,8 +1745,8 @@ Footer Section style
 @media (max-width: 600px) {
     .logo {
         width: 80%; /* 调整为较小屏幕适合的尺寸 */
-        top: -10px;  /* 向上移动10像素 */
-        right: -10px; /* 向右移动10像素 */
+        top: -5px;  /* 向上移动10像素 */
+        right: -5px; /* 向右移动10像素 */
         /* 其他需要调整的样式 */
     }
 }
