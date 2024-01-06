@@ -1737,12 +1737,16 @@ Footer Section style
     text-decoration: none;
 
 }
-
+.logo {
+    /* 基本样式 */
+    position: relative; /* 设置为相对定位 */
+    /* 其他样式 */
+}
 @media (max-width: 600px) {
     .logo {
         width: 80%; /* 调整为较小屏幕适合的尺寸 */
-        margin-top: -5px;
-        margin-left: -5px;
+        top: -10px;  /* 向上移动10像素 */
+        right: -10px; /* 向右移动10像素 */
         /* 其他需要调整的样式 */
     }
 }
