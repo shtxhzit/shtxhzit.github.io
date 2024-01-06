@@ -1027,7 +1027,7 @@ Home Section style
     z-index: 1;
 }
 .home_text h1{
-    font-family: "楷体","楷体_GB2312";
+    font-family: "楷体", "楷体_GB2312", "微软雅黑", "宋体", serif;
     font-size:4rem;
     font-weight: 500;
     line-height: 6rem;
