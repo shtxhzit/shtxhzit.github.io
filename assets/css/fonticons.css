@@ -7,12 +7,13 @@
 */
 
 @font-face {
-    font-family: 'icofont';
-    src: url('../fonts/icofont.eot?v=1.0.0-beta');
-    src: url('../fonts/icofont.eot?v=1.0.0-beta#iefix') format('embedded-opentype'),
-    url('../fonts/icofont.ttf?v=1.0.0-beta') format('truetype'),
-    url('../fonts/icofont.woff?v=1.0.0-beta') format('woff'),
-    url('../fonts/icofont.svg?v=1.0.0-beta#icofont') format('svg');
+    font-family: "icofont";
+    src: url("https://db.onlinewebfonts.com/t/08abfb8ac2e3dd415deee40206de1335.eot");
+    src: url("https://db.onlinewebfonts.com/t/08abfb8ac2e3dd415deee40206de1335.eot?#iefix")format("embedded-opentype"),
+    url("https://db.onlinewebfonts.com/t/08abfb8ac2e3dd415deee40206de1335.woff2")format("woff2"),
+    url("https://db.onlinewebfonts.com/t/08abfb8ac2e3dd415deee40206de1335.woff")format("woff"),
+    url("https://db.onlinewebfonts.com/t/08abfb8ac2e3dd415deee40206de1335.ttf")format("truetype"),
+    url("https://db.onlinewebfonts.com/t/08abfb8ac2e3dd415deee40206de1335.svg#icofont");
     font-weight: normal;
     font-style: normal;
 }
