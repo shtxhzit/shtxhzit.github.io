@@ -1598,7 +1598,7 @@ Maps Section style
 =====================*/
 
 .main_maps{
-    background: url(../images/maps.jpg) no-repeat center center;
+    background: url('https://s2.loli.net/2024/01/08/be5IOJoHg7FnkSP.jpg') no-repeat center center;
     position: relative;
     width:100%;
     overflow: hidden;
