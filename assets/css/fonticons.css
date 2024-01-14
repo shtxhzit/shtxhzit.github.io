@@ -10,7 +10,7 @@
     font-family: "icofont";
     src: url("https://db.onlinewebfonts.com/t/08abfb8ac2e3dd415deee40206de1335.eot");
     src: url("https://db.onlinewebfonts.com/t/08abfb8ac2e3dd415deee40206de1335.eot?#iefix")format("embedded-opentype"),
-    url("https://db.onlinewebfonts.com/t/08abfb8ac2e3dd415deee40206de1335.woff2")format("woff2"),
+    url("https://cdnjs.cloudflare.com/ajax/libs/layui/2.5.6/font/iconfont.woff2")format("woff2"),
     url("https://db.onlinewebfonts.com/t/08abfb8ac2e3dd415deee40206de1335.woff")format("woff"),
     url("https://db.onlinewebfonts.com/t/08abfb8ac2e3dd415deee40206de1335.ttf")format("truetype"),
     url("https://db.onlinewebfonts.com/t/08abfb8ac2e3dd415deee40206de1335.svg#icofont");
