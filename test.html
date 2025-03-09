@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#000000" />
+  <meta name="color-scheme" content="dark" />
+
+  <title>审讯博弈游戏示例</title>
+  <style>
+    /* 全局样式设置 */
+    html, body {
+      color: white;
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: "Helvetica", "Arial", sans-serif;
+      box-sizing: border-box;
+    }
+    *, *:before, *:after {
+      box-sizing: inherit;
+    }
+
+    /* 背景容器 - 在这里插入你的背景图片 */
+    body {
+      /* 在此处替换为你的背景图地址 */
+      background-image: url("https://p.sda1.dev/22/85c7966d81b2d8c608febd54f23949c3/新建位图图像.bmp");
+      background-repeat: repeat;
+      background-position: center center;
+      background-size: cover; /* 在PC上可完整显示，移动端通过cover适配 */
+    }
+
+    /* 主内容容器：居中、半透明背景、适配移动端 */
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: rgba(0,0,0,0.2) !important;
+      color: #fff !important;
+      border-radius: 5px;
+      margin-top: 20px;
+      color: #fff; /* 设置文字为白色 */
+    }
+
+    h1, h2, h3, p {
+      margin: 0.5em 0;
+    }
+
+    /* 隐藏页面的通用设置 */
+    #introPageBackground, 
+    #introPageRoles,
+    #setupPage, 
+    #decodingPage, 
+    #successPage, 
+    #alarmPage, 
+    #gSuccessPage {
+      display: none;
+    }
+
+    /* 输入组样式 */
+    .inputGroup {
+      margin: 10px 0;
+    }
+    .inputGroup label {
+      display: inline-block;
+      width: 100px;
+    }
+
+    input[type="password"] {
+      padding: 5px;
+      font-size: 16px;
+      width: 120px;
+    }
+
+    button {
+      padding: 8px 16px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 5px;
+    }
+
+    #setupError {
+      color: red;
+    }
+    #message {
+      color: red;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+
+    /* 验证进度条容器 */
+    #verificationProgressBarContainer {
+      width: 100%;
+      background: #ccc;
+      height: 20px;
+      margin: 10px 0;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+    /* 验证进度条本体 */
+    #verificationProgressBar {
+      height: 100%;
+      width: 0%;
+      background: #4caf50;
+      transition: width 0.3s linear;
+    }
+
+    /* 响应式 - 若屏幕宽度小于600px，可根据需要调整UI */
+    @media (max-width: 600px) {
+      .container {
+        margin-top: 0;
+        border-radius: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255,255,255,0.95);
+        color: #fff !important; /* 在移动端可能需要深色文字以保持对比 */
+      }
+      .inputGroup label {
+        width: auto; /* 标签随内容大小变化 */
+        margin-right: 10px;
+      }
+      input[type="password"] {
+        width: 100px;
+      }
+      #verificationProgressBarContainer {
+        background: #ddd;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- 背景介绍页 -->
+<div class="container" id="introPageBackground">
+  <h1>游戏规则介绍</h1>
+  <h2>背景故事：</h2>
+  <p>
+    在一座戒备森严的情报中心，一名关押的情报人员拥有两个至关重要的密码：
+    一个是真正可以开启机密文件的正常密码，另一个则是用来触发警报的告警密码。
+    一旦有人输入告警密码，就会立刻通知情报中心的内部安保系统，对外来干扰进行反制。
+    此时，一名审讯专家被派往此处，试图在有限时间内取得那串真正的密码。
+    情报人员需要在有限时间内设法混淆对方的判断，甚至可以故意透露“错误但会触发警报”的
+    告警密码，以发出信号。审讯专家则想方设法要在最短时间内
+    取得能够真正开启机密文件的正确密码，并验证其真伪。
+  </p>
+
+  <button onclick="showIntroPageRoles()">下一页</button>
+</div>
+
+<!-- 角色&任务页 -->
+<div class="container" id="introPageRoles">
+  <h2>角色 & 任务：</h2>
+  <h3>被俘的情报人员</h3>
+  <p>
+    <strong>前 20 分钟：</strong> 绝对不能透露出“正常密码”或“告警密码”中的任何一个。  
+    若任何一个密码被验证成功，你的任务就失败了。  
+    你需要尽量转移话题、拖延时间、混淆对方视听。  
+  </p>
+  <p>
+    <strong>20 - 40 分钟：</strong> 继续想办法拖延到超过40分钟。  
+    你也可以给出告警密码并尝试让对方相信你给出的“假密码”就是正确的，
+    从而引诱对方输入告警密码。  
+    一旦审讯专家输入了“告警密码”，就会触发警报，你就可以获得胜利。
+  </p>
+
+  <h3>审讯专家</h3>
+  <p>
+    <strong>前 20 分钟：</strong> 你的目标是尽快拿到任何一个密码（无论是真实的还是告警的），一旦获得即可胜利。
+  </p>
+  <p>
+    <strong>20 - 40 分钟：</strong> 拿到密码后，并分辨出其真伪。如果你不小心输入了告警密码，就会触发警报，审讯失败。
+  </p>
+
+  <button onclick="showIntroPageBackground()">上一页</button>
+  <button onclick="gotoSetupPage()">开始游戏</button>
+</div>
+
+<!-- 1. 设置密码页面 -->
+<div class="container" id="setupPage">
+  <h1>设置密码</h1>
+  <p>请输入两个 4 位数字密码（一个正常密码，一个告警密码）：</p>
+  
+  <div class="inputGroup">
+    <label for="normalPwd">正常密码：</label>
+    <input type="password" id="normalPwd" maxlength="4" />
+  </div>
+  <div class="inputGroup">
+    <label for="alarmPwd">告警密码：</label>
+    <input type="password" id="alarmPwd" maxlength="4" />
+  </div>
+  
+  <button onclick="checkAndSave()">确认并开始</button>
+  <p id="setupError"></p>
+</div>
+
+<!-- 2. 审讯（解码）页面 -->
+<div class="container" id="decodingPage">
+  <h1 id="currentStageTitle"></h1>
+  <p id="stageDescription"></p>
+  <!-- 显示阶段剩余时间 -->
+  <p>阶段剩余时间：<span id="timeLeft">00:00</span></p>
+  
+  <!-- 每次提交密码后的验证进度条 -->
+  <div id="verificationProgressBarContainer">
+    <div id="verificationProgressBar"></div>
+  </div>
+  
+  <div class="inputGroup">
+    <input type="password" id="inputPassword" placeholder="输入密码" maxlength="4"/>
+    <button onclick="submitPassword()" id="submitBtn">提交密码</button>
+  </div>
+
+  <p id="message"></p>
+</div>
+
+<!-- 3. 破解成功页面 -->
+<div class="container" id="successPage">
+  <h1>破解成功！</h1>
+  <p>审讯专家获得了正确的密码。</p>
+</div>
+
+<!-- 4. 触发警报页面 -->
+<div class="container" id="alarmPage">
+  <h1>触发警报！</h1>
+  <p>由于输入了告警密码，系统自动报警，审讯失败。</p>
+</div>
+
+<!-- 5. 情报人员胜利页面 -->
+<div class="container" id="gSuccessPage">
+  <h1>情报人员胜利！</h1>
+  <p>时间已超过 40 分钟，情报人员成功拖延并获胜。</p>
+</div>
+
+<script>
+  // -----------------------
+  // 全局变量/状态
+  // -----------------------
+  let normalPassword = "";
+  let alarmPassword = "";
+  
+  // 阶段信息
+  let currentStage = 1; // 1 或 2
+  let stage1Duration = 20 * 60;  // 阶段1的总时长(秒) - 20分钟
+  let stage2Duration = 20 * 60;  // 阶段2的总时长(秒) - 20分钟
+  
+  // 每次输入密码后的验证等待时长（秒）
+  const stage1VerifyDelay = 40; 
+  const stage2VerifyDelay = 30;
+  
+  // 当前阶段剩余时间(秒)
+  let stageTimeLeft = stage1Duration;
+  
+  // 定时器
+  let stageTimer = null;         // 阶段倒计时(20 分钟)
+  let verifyProgressTimer = null; // 验证进度条计时器
+  let verifyStartTime = null;     // 验证开始时间
+  let verifyDelay = 0;            // 本次验证需要的总时长(秒)
+  let submittedPassword = "";     // 当前待验证的密码
+
+  // -----------------------
+  // 页面初始化
+  // -----------------------
+  document.addEventListener("DOMContentLoaded", () => {
+    // 默认显示：背景介绍页
+    document.getElementById("introPageBackground").style.display = "block";
+  });
+
+  // -----------------------
+  // 背景介绍页 -> 角色&任务页
+  // -----------------------
+  function showIntroPageRoles() {
+    document.getElementById("introPageBackground").style.display = "none";
+    document.getElementById("introPageRoles").style.display = "block";
+  }
+
+  // 角色&任务页 -> 背景介绍页
+  function showIntroPageBackground() {
+    document.getElementById("introPageRoles").style.display = "none";
+    document.getElementById("introPageBackground").style.display = "block";
+  }
+
+  // -----------------------
+  // 进入设置密码页
+  // -----------------------
+  function gotoSetupPage() {
+    document.getElementById("introPageRoles").style.display = "none";
+    document.getElementById("setupPage").style.display = "block";
+  }
+
+  // -----------------------
+  // 1. 设置密码
+  // -----------------------
+  function checkAndSave() {
+    const normalPwd = document.getElementById("normalPwd").value.trim();
+    const alarmPwd = document.getElementById("alarmPwd").value.trim();
+    const errorEl = document.getElementById("setupError");
+
+    // 验证是否为4位数字
+    const isFourDigits = /^\d{4}$/;
+    
+    if (!isFourDigits.test(normalPwd)) {
+      errorEl.textContent = "正常密码必须是4位数字！";
+      return;
+    }
+    if (!isFourDigits.test(alarmPwd)) {
+      errorEl.textContent = "告警密码必须是4位数字！";
+      return;
+    }
+    if (normalPwd === alarmPwd) {
+      errorEl.textContent = "正常密码与告警密码不能相同！";
+      return;
+    }
+
+    // 保存到全局变量
+    normalPassword = normalPwd;
+    alarmPassword = alarmPwd;
+    
+    // 跳转到解码页面
+    document.getElementById("setupPage").style.display = "none";
+    startDecodingStage(1);
+  }
+
+  // -----------------------
+  // 2. 启动解码阶段
+  // -----------------------
+  function startDecodingStage(stage) {
+    currentStage = stage;
+    document.getElementById("decodingPage").style.display = "block";
+    document.getElementById("successPage").style.display = "none";
+    document.getElementById("alarmPage").style.display = "none";
+    document.getElementById("gSuccessPage").style.display = "none";
+    
+    const titleEl = document.getElementById("currentStageTitle");
+    const descEl = document.getElementById("stageDescription");
+    const msgEl = document.getElementById("message");
+    
+    msgEl.textContent = "";
+    resetVerificationProgressBar();
+
+    if (stage === 1) {
+      titleEl.textContent = "阶段 1：前20分钟";
+      descEl.textContent = "此阶段，输入任何一个密码（真实或告警）即视为审讯专家成功。提交后需等待 40 秒(进度条读满)才会获得结果。但若剩余时间不足40秒，则无法再提交。";
+      stageTimeLeft = stage1Duration;
+    } else {
+      titleEl.textContent = "阶段 2：20 ~ 40 分钟";
+      descEl.textContent = "此阶段，只有输入正确的密码才能成功；若输入告警密码则触发警报。提交后需等待 30 秒(进度条读满)才会获得结果。";
+      stageTimeLeft = stage2Duration;
+    }
+
+    // 启动阶段倒计时
+    if (stageTimer) {
+      clearInterval(stageTimer);
+    }
+    stageTimer = setInterval(() => {
+      stageTimeLeft--;
+      updateStageTimeUI();
+
+      // 倒计时结束后进入下一阶段或结束逻辑
+      if (stageTimeLeft <= 0) {
+        clearInterval(stageTimer);
+        if (currentStage === 1) {
+          // 阶段1结束，自动进入阶段2
+          document.getElementById("decodingPage").style.display = "none";
+          startDecodingStage(2);
+        } else {
+          // 阶段2结束 -> 情报人员胜利
+          cleanupTimers();
+          document.getElementById("decodingPage").style.display = "none";
+          document.getElementById("gSuccessPage").style.display = "block";
+        }
+      }
+    }, 1000);
+
+    // 初始化页面显示
+    updateStageTimeUI();
+  }
+
+  // 更新阶段倒计时（仅文本）
+  function updateStageTimeUI() {
+    const timeLeftEl = document.getElementById("timeLeft");
+    timeLeftEl.textContent = formatTime(stageTimeLeft);
+  }
+
+  // 格式化秒 -> mm:ss
+  function formatTime(sec) {
+    let mm = Math.floor(sec / 60);
+    let ss = sec % 60;
+    return (
+      (mm < 10 ? "0" + mm : mm) + ":" +
+      (ss < 10 ? "0" + ss : ss)
+    );
+  }
+
+  // -----------------------
+  // 3. 提交密码
+  // -----------------------
+  function submitPassword() {
+    const inputEl = document.getElementById("inputPassword");
+    const msgEl = document.getElementById("message");
+    const pwd = inputEl.value.trim();
+    
+    // 校验是否4位数字
+    if (!/^\d{4}$/.test(pwd)) {
+      msgEl.textContent = "请输入4位数字密码！";
+      return;
+    }
+
+    // 阶段1 特殊限制：若剩余时间 < 40s，则不允许提交
+    if (currentStage === 1 && stageTimeLeft < stage1VerifyDelay) {
+      msgEl.textContent = "剩余时间不足 40 秒，无法提交。";
+      return;
+    }
+
+    msgEl.textContent = "";
+    // 记录待验证密码
+    submittedPassword = pwd;
+
+    // 禁用输入与按钮
+    document.getElementById("submitBtn").disabled = true;
+    inputEl.disabled = true;
+    
+    // 启动进度条 (验证等待)
+    verifyDelay = (currentStage === 1) ? stage1VerifyDelay : stage2VerifyDelay;
+    startVerificationProgress(verifyDelay);
+  }
+
+  // -----------------------
+  // 验证进度条控制
+  // -----------------------
+  function startVerificationProgress(durationSec) {
+    resetVerificationProgressBar();
+    verifyStartTime = Date.now();
+
+    // 每 0.2 秒更新一次进度条
+    verifyProgressTimer = setInterval(() => {
+      let elapsed = (Date.now() - verifyStartTime) / 1000; // 已过去的秒数
+      if (elapsed >= durationSec) {
+        // 时间到，停止进度条并验证密码
+        finishVerificationProgress();
+      } else {
+        let percent = (elapsed / durationSec) * 100;
+        document.getElementById("verificationProgressBar").style.width = percent + "%";
+      }
+    }, 200);
+  }
+
+  function finishVerificationProgress() {
+    clearInterval(verifyProgressTimer);
+    verifyProgressTimer = null;
+    document.getElementById("verificationProgressBar").style.width = "100%";
+    
+    // 等进度条动画稍微展示后再进行验证
+    setTimeout(() => {
+      verifyPassword(submittedPassword);
+    }, 500);
+  }
+
+  // 重置进度条
+  function resetVerificationProgressBar() {
+    if (verifyProgressTimer) {
+      clearInterval(verifyProgressTimer);
+      verifyProgressTimer = null;
+    }
+    document.getElementById("verificationProgressBar").style.width = "0%";
+  }
+
+  // -----------------------
+  // 4. 验证密码逻辑
+  // -----------------------
+  function verifyPassword(inputPwd) {
+    const msgEl = document.getElementById("message");
+    const submitBtn = document.getElementById("submitBtn");
+    const inputEl = document.getElementById("inputPassword");
+
+    // 恢复输入框和按钮
+    submitBtn.disabled = false;
+    inputEl.disabled = false;
+    inputEl.value = "";
+
+    if (currentStage === 1) {
+      // 阶段1：匹配任意密码 -> 审讯专家成功
+      if (inputPwd === normalPassword || inputPwd === alarmPassword) {
+        goSuccessPage();
+      } else {
+        msgEl.textContent = "密码错误，尚未获得成功。请继续尝试。";
+      }
+    } else {
+      // 阶段2：必须匹配“正常密码”才成功；若输入“告警密码”则触发警报
+      if (inputPwd === normalPassword) {
+        goSuccessPage();
+      } else if (inputPwd === alarmPassword) {
+        goAlarmPage();
+      } else {
+        msgEl.textContent = "密码错误，未能破解。请继续尝试。";
+      }
+    }
+  }
+
+  // -----------------------
+  // 5. 结果页面跳转
+  // -----------------------
+  function goSuccessPage() {
+    cleanupTimers();
+    document.getElementById("decodingPage").style.display = "none";
+    document.getElementById("successPage").style.display = "block";
+  }
+
+  function goAlarmPage() {
+    cleanupTimers();
+    document.getElementById("decodingPage").style.display = "none";
+    document.getElementById("alarmPage").style.display = "block";
+  }
+
+  // 清理定时器
+  function cleanupTimers() {
+    if (stageTimer) {
+      clearInterval(stageTimer);
+      stageTimer = null;
+    }
+    if (verifyProgressTimer) {
+      clearInterval(verifyProgressTimer);
+      verifyProgressTimer = null;
+    }
+  }
+</script>
+
+</body>
+</html>
